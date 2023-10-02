@@ -6,26 +6,13 @@
 
 using namespace sbd;
 
-class IntRecord : public basic::RecordIfc {
+class IntRecord : public basic::RecordIfc<int> {
 public:
-	int value{ 0 };
-
-	IntRecord(int value) :value(value) {};
-	IntRecord() : value(std::numeric_limits<int>::min()) {};
-
-	virtual std::vector<uint8_t> serialize() override { return {}; };
-	virtual RecordIfc deserialize() override { return {}; };
-	bool operator>(const IntRecord& other) { return value > other.value; }
-	bool operator>=(const IntRecord& other) { return value >= other.value; }
-	bool operator==(const IntRecord& other) { return value == other.value; }
-	bool operator<(const IntRecord& other) { return value < other.value; }
-	bool operator<=(const IntRecord& other) { return value <= other.value; }
+	IntRecord() : RecordIfc(std::numeric_limits<int>::min()) {};
 };
 
-
-
 int main(){
-	CarTape tape("chuj");
+	impl::CarTape tape("chuj");
 	tape.addRecord(impl::CarRecord("ABI"));
 	tape.addRecord(impl::CarRecord("CHYYY"));
 	tape.addRecord(impl::CarRecord("XDD"));

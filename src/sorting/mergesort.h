@@ -43,7 +43,6 @@ namespace {
 	template<typename RECORD_T>
 	sbd::basic::Tape<RECORD_T> merge(sbd::basic::Tape<RECORD_T>& tape1, sbd::basic::Tape<RECORD_T>& tape2) {
 		sbd::basic::Tape<RECORD_T> out("out");
-
 		RECORD_T lastRecord1, lastRecord2;
 		while (!tape1.isAtEnd() && !tape2.isAtEnd()) {
 			bool isRun1Finished = tape1.currentRecord() < lastRecord1;
@@ -58,18 +57,16 @@ namespace {
 			lastRecord2 = tape2.currentRecord();
 			out.addRecord(tape1.currentRecord() < tape2.currentRecord() ? tape1.nextRecord() : tape2.nextRecord());
 		}
+		// add rest of the tape that didn't finish
 		handleEndOfRun(out, tape1, true);
 		handleEndOfRun(out, tape2, true);
-		// add rest of the file
 		return out;
 	}
 }
 
-
-
 namespace sbd::sorting {
 	template<typename RECORD_T>
-	void mergesort(sbd::basic::Tape<RECORD_T>& tape) {
+	inline void mergesort(sbd::basic::Tape<RECORD_T>& tape) {
 		bool sorted{ false };
 
 		while (true) {

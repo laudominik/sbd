@@ -5,20 +5,9 @@
 #include <generic/RecordIfc.h>
 
 namespace sbd::impl {
-	class CarRecord : public sbd::basic::RecordIfc {
+	class CarRecord : public sbd::basic::RecordIfc<std::string> {
 	public:
-		std::string value;
-
-		CarRecord(std::string value) :value(value) {};
-		CarRecord() = default;
-
-		virtual std::vector<uint8_t> serialize() override { return {}; };
-		virtual RecordIfc deserialize() override { return {}; };
-		bool operator>(const CarRecord& other) { return value > other.value; }
-		bool operator>=(const CarRecord& other) { return value >= other.value; }
-		bool operator==(const CarRecord& other) { return value == other.value; }
-		bool operator<(const CarRecord& other) { return value < other.value; }
-		bool operator<=(const CarRecord& other) { return value <= other.value; }
+		CarRecord() :RecordIfc("") {};
+		CarRecord(const std::string& value) : RecordIfc(value) {};
 	};
-
 }
