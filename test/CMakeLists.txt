@@ -14,7 +14,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(sbd_test 
   perf1.cpp
- "tape.cpp" "util/Measurement.h")
+ tape.cpp)
 
 target_link_libraries(
   sbd_test

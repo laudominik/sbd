@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include <generic/RecordIfc.h>
 #include <generic/Tape.h>
 #include "sorting/mergesort.h"
@@ -12,7 +14,7 @@ public:
 };
 
 int main(){
-	impl::CarTape tape("chuj");
+	impl::CarTape tape("MainTape", std::ios::out);
 	tape.addRecord(impl::CarRecord("ABI"));
 	tape.addRecord(impl::CarRecord("CHYYY"));
 	tape.addRecord(impl::CarRecord("XDD"));
@@ -34,5 +36,5 @@ int main(){
 	tape.addRecord(IntRecord(1));
 	tape.addRecord(IntRecord(1));*/
 
-	sorting::mergesort(tape);
+	//sorting::mergesort(tape);
 }

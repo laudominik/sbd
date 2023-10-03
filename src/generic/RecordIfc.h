@@ -10,8 +10,7 @@ namespace sbd::basic {
 	public:
 		RecordIfc(T t) : value(t) {}
 
-		//virtual std::vector<uint8_t> serialize() { return {}; };
-		//virtual RecordIfc<T> deserialize() { return {}; };
+		virtual std::vector<uint8_t> serialize() const { return {}; };
 		bool operator>(const RecordIfc<T>& other) { return value > other.value; }
 		bool operator>=(const RecordIfc<T>& other) { return value >= other.value; }
 		bool operator==(const RecordIfc<T>& other) { return value == other.value; }
