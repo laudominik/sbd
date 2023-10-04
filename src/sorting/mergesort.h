@@ -28,14 +28,18 @@ namespace {
 		}
 	}
 
+	// @returns true if it's a single serie
 	template<typename RECORD_T>
-	void handleEndOfRun(sbd::basic::Tape<RECORD_T>& destination, sbd::basic::Tape<RECORD_T>& source, bool appendRest = false) {
-		if (source.isAtEnd()) return;
+	bool handleEndOfRun(sbd::basic::Tape<RECORD_T>& destination, sbd::basic::Tape<RECORD_T>& source, bool appendRest = false) {
+		if (source.isAtEnd()) return true;
+		bool singleSerie = true;
 		RECORD_T lastRecord = source.currentRecord();
 		while (!source.isAtEnd() && (source.currentRecord() >= lastRecord || appendRest)){
+			singleSerie = singleSerie && source.currentRecord() >= lastRecord;
 			lastRecord = source.currentRecord();
 			destination.addRecord(source.nextRecord());
 		}
+		return singleSerie;
 	}
 
 	template<typename RECORD_T>
@@ -68,11 +72,9 @@ namespace {
 			lastRecord = record;
 		}
 		// add rest of the tape that didn't finish
-		if (!tape1.isAtEnd() && tape1.currentRecord() < lastRecord) sorted = false;
-		if (!tape2.isAtEnd() && tape2.currentRecord() < lastRecord) sorted = false;
-		handleEndOfRun(out, tape1, true);
-		handleEndOfRun(out, tape2, true);
-		return sorted;
+		if (!tape1.isAtEnd() && tape1.currentRecord() <= lastRecord) sorted = false;
+		if (!tape2.isAtEnd() && tape2.currentRecord() <= lastRecord) sorted = false;
+		return handleEndOfRun(out, tape1, true) && handleEndOfRun(out, tape2, true) && sorted;
 	}
 }
 
@@ -82,7 +84,6 @@ namespace sbd::sorting {
 		sbd::basic::Tape<RECORD_T> temp1(constants::TEMP_TAPE_1_NAME, std::ios::out);
 		sbd::basic::Tape<RECORD_T> temp2(constants::TEMP_TAPE_2_NAME, std::ios::out);
 		bool sorted{ false };
-
 
 		while (!sorted) {
 			distribute(tape, temp1, temp2);
