@@ -25,6 +25,9 @@ namespace sbd::basic {
 				throw std::runtime_error("[ERROR] unable to open file");
 			}
  			currentPage.reserve(recordCount);
+			if (mode == std::ios::in) {
+				loadPage();
+			}
 		}
 
 		void addRecord(const RECORD_T& record) {
@@ -32,7 +35,7 @@ namespace sbd::basic {
 
 			if (fullPage()) {
 				savePage();
-				nextPage();
+				resetPagePtr();
 			};
 
 			currentPage.push_back(record);
@@ -41,9 +44,13 @@ namespace sbd::basic {
 
 		RECORD_T nextRecord() {
 			readModeCheck();
-			// TODO: should check for the end of the page, if so, load new page 
+
+			if (isAtEnd()) {
+				throw std::runtime_error("[ERROR] index out of file range");
+			}
+
 			if (pageEnd()) {
-				nextPage();
+				resetPagePtr();
 				loadPage();
 			}
 			return currentPage[pageIndex++];
@@ -55,7 +62,8 @@ namespace sbd::basic {
 		}
 
 		bool isAtEnd() const {
-			return file.eof();
+			readModeCheck();
+			return file.eof() && pageEnd();
 		}
 
 		~Tape() {
@@ -75,8 +83,8 @@ namespace sbd::basic {
 			return pageIndex >= recordCount;
 		}
 
-		bool pageEnd() {
-			return fullPage();
+		bool pageEnd() const {
+			return pageIndex >= currentPage.size();
 		}
 
 		void writeModeCheck() const {
@@ -104,16 +112,22 @@ namespace sbd::basic {
 			file.flush();
 		}
 
-		void nextPage() {
+		void resetPagePtr() {
 			pageIndex = 0;
 			currentPage.clear();
 		}
 
 		void loadPage() {
-			// should load the next PAGE_SIZE bytes from file
-			// if the file doesn't contain PAGE_SIZE bytes, then it should load as much as it can
-			for (auto i = 0u; i < recordCount; i++) {
-				
+			if (!currentPage.empty()) {
+				throw std::runtime_error("[ERROR] trying to read page when the previous one wasn't unloaded");
+			}
+			std::vector<uint8_t> pageSerialized(constants::PAGE_SIZE);
+			file.read(reinterpret_cast<char*>(pageSerialized.data()), constants::PAGE_SIZE);
+			auto readBytes = file.gcount();
+			time::getReadClock().tick();
+			auto readRecords = std::min(recordCount, readBytes / constants::RECORD_SIZE);
+			for (auto i = 0u; i < readRecords; i++) {
+				currentPage.push_back(RECORD_T::deserialize(pageSerialized, i * constants::RECORD_SIZE));
 			}
 		}
 	};

@@ -18,9 +18,8 @@ namespace sbd::impl {
 			return bytes; 
 		}
 
-		CarRecord deserialize(std::vector<uint8_t>& bytes) {
-			//TODO: should recover record from bytes
-			return CarRecord("");
+		static CarRecord deserialize(std::vector<uint8_t>& bytes, uint64_t offset) {
+			return CarRecord(std::string(bytes.begin() + offset, bytes.begin() + offset + constants::RECORD_SIZE));
 		}
 		CarRecord() :RecordIfc("") {};
 		CarRecord(const std::string& value) : RecordIfc(value) {};

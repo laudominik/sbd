@@ -32,10 +32,11 @@ namespace sbd::impl::measurement {
 
 	class Measurement {
 	public:
-		Measurement(MeasurementReport& collection) : collection(collection), start({sbd::time::getWriteClock(), sbd::time::getReadClock()}) {}
+		Measurement(MeasurementReport& collection): collection(collection) {};
+		//Measurement(MeasurementReport& collection) : collection(collection), start({sbd::time::getWriteClock(), sbd::time::getReadClock()}) {}
 		~Measurement() {
-			auto elapsed = std::chrono::steady_clock::now() - start;
-			collection.push_back(elapsed);
+			//auto elapsed = std::chrono::steady_clock::now() - start;
+			//collection.push_back(elapsed);
 		}
 	private:
 		MeasurementReport& collection;

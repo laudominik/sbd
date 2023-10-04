@@ -3,7 +3,7 @@
 #include "Clock.h"
 
 namespace sbd::time {
-	Clock& getReadClock() {
+	inline Clock& getReadClock() {
 		static Clock clock;
 		return clock;
 	}
