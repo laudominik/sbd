@@ -11,7 +11,6 @@
 using namespace sbd;
 /*
 TODO:
-- generation
 - performance tests
 - write file contents after each iter
 */
@@ -49,7 +48,10 @@ void cli() {
 		} else if (command == "manual") {
 			sorting::mergesort(*impl::carloader::fromCli());
 		} else if (command == "random") {
-			sorting::mergesort(*impl::carloader::fromGenerator(100));
+			uint64_t records;
+			std::cout << "number of records to generate: ";
+			std::cin >> records;
+			sorting::mergesort(*impl::carloader::fromGenerator(records));
 		} else if (command == "file") {
 			sorting::mergesort(*impl::carloader::fromFile("aaa"));
 		} else if (command == "help") {
