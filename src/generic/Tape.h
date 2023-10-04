@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include <fstream>
+#include <filesystem>
 
 #include <util/Constants.h>
 #include <generic/RecordIfc.h>
@@ -47,29 +48,35 @@ namespace sbd::basic {
 			if (isAtEnd()) {
 				throw std::runtime_error("[ERROR] index out of file range");
 			}
-
-			auto returnValue = currentPage[pageIndex++];
-
+			lazyLoadPage();
 			if (pageEnd()) {
 				resetPagePtr();
 				loadPage();
 			}
-			return returnValue;
+
+			return currentPage[pageIndex++];
 		}
 
-		RECORD_T currentRecord() const {
+		RECORD_T currentRecord() {
 			readModeCheck();
+			lazyLoadPage();
+			if (pageEnd()) {
+				resetPagePtr();
+				loadPage();
+			}
 			return currentPage[pageIndex];
 		}
 
 		bool isAtEnd() const {
 			readModeCheck();
-			return file.eof() && pageEnd();
+			//bool eof = file.eof();
+			return readFileBytes == fileSizeBytes && pageEnd();
 		}
 
 		void reset(std::ios_base::openmode mode_) {
 			closeFile();
 			mode = mode_;
+			readFileBytes = 0u;
 			resetPagePtr();
 			openFile();
 		}
@@ -83,10 +90,13 @@ namespace sbd::basic {
 		uint64_t pageIndex{};
 		std::fstream file;
 		std::string filename;
+		uint64_t fileSizeBytes{};
+		uint64_t readFileBytes{};
+		bool firstPageLoaded{ false };
 		static constexpr auto recordCount = constants::PAGE_SIZE / constants::RECORD_SIZE;
 
 		void closeFile() {
-			if (mode == std::ios::out) {
+			if (mode == std::ios::out && pageIndex != 0) {
 				savePage();
 			}
 			if (file.is_open()) {
@@ -94,14 +104,23 @@ namespace sbd::basic {
 			}
 		}
 
+		void lazyLoadPage() {
+			if (firstPageLoaded) {
+				return;
+			}
+			loadPage();
+			firstPageLoaded = true;
+		}
+
 		void openFile() {
 			file.open(filename, mode);
 			if (!file.good()) {
 				throw std::runtime_error("[ERROR] unable to open file");
 			}
-			if (mode == std::ios::in) {
+		/*	if (mode == std::ios::in) {
 				loadPage();
-			}
+			}*/
+			fileSizeBytes = std::filesystem::file_size(filename);
 		}
 
 		bool fullPage() {
@@ -154,6 +173,7 @@ namespace sbd::basic {
 			for (auto i = 0u; i < readRecords; i++) {
 				currentPage.push_back(RECORD_T::deserialize(pageSerialized, i * constants::RECORD_SIZE));
 			}
+			readFileBytes += readBytes;
 		}
 	};
 }

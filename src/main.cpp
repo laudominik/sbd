@@ -7,6 +7,8 @@
 #include <impl/CarTape.h>
 #include <sorting/mergesort.h>
 #include <impl/CarLoader.h>
+#include <time/ReadClock.h>
+#include <time/WriteClock.h>
 
 using namespace sbd;
 /*
@@ -40,6 +42,8 @@ int main(){
 
 void cli() {
 	std::string command;
+	//std::srand(std::time(0));
+	std::srand(0);
 	while (true) {
 		std::cout << std::endl << "input command: " << std::endl;
 		std::cin >> command;
@@ -51,7 +55,10 @@ void cli() {
 			uint64_t records;
 			std::cout << "number of records to generate: ";
 			std::cin >> records;
-			sorting::mergesort(*impl::carloader::fromGenerator(records));
+			auto tape = impl::carloader::fromGenerator(records);
+			auto ops = time::getWriteClock().get() + time::getReadClock().get();
+			sorting::mergesort(*tape);
+			std::cout << time::getWriteClock().get() + time::getReadClock().get() - ops << std::endl;
 		} else if (command == "file") {
 			sorting::mergesort(*impl::carloader::fromFile("aaa"));
 		} else if (command == "help") {

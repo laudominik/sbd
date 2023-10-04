@@ -8,6 +8,6 @@ namespace sbd::time {
 		void tick() { counter++; };
 		uint64_t get() { return counter; };
 	protected:
-		uint64_t counter{};
+		uint64_t counter{0u};
 	};
 }
