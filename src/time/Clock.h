@@ -2,6 +2,12 @@
 
 #include <cstdint>
 
+#define DECLARE_CLOCK(name) \
+	inline Clock& name () { \
+		static Clock clock; \
+		return clock; \
+	}
+
 namespace sbd::time {
 	class Clock {
 	public:
@@ -11,3 +17,4 @@ namespace sbd::time {
 		uint64_t counter{0u};
 	};
 }
+

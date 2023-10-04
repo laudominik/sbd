@@ -7,64 +7,53 @@
 #include <impl/CarTape.h>
 #include <sorting/mergesort.h>
 #include <impl/CarLoader.h>
-#include <time/ReadClock.h>
-#include <time/WriteClock.h>
+#include <time/DiskClocks.h>
+#include <time/Measurement.h>
 
 using namespace sbd;
 /*
 TODO:
 - performance tests
 - write file contents after each iter
+- test file
 */
 
 void cli();
 
 int main(){
 	cli();
-	//auto& tape = impl::carloader::fromCli();
-	//impl::CarTape tape(constants::MAIN_TAPE_NAME, std::ios::out);
-	
-	//tape.addRecord(impl::CarRecord("ABI"));
-	//tape.addRecord(impl::CarRecord("CHYYY"));
-	//tape.addRecord(impl::CarRecord("XDD"));
-	//tape.addRecord(impl::CarRecord("POGG"));
-	//tape.addRecord(impl::CarRecord("UWU"));
-	//tape.addRecord(impl::CarRecord("KIWI"));
-	//tape.addRecord(impl::CarRecord("POMELO"));
-	//tape.addRecord(impl::CarRecord("GRANAT"));
-	//tape.addRecord(impl::CarRecord("GRUSZKA"));
-	//tape.addRecord(impl::CarRecord("JAPKO"));
-	//tape.addRecord(impl::CarRecord("JABLKO"));
-	//tape.addRecord(impl::CarRecord("DYNIA"));
-	//tape.addRecord(impl::CarRecord("DYNKA"));
-	//sorting::mergesort(tape);	
+}
+
+void runSort(impl::CarTape& tape) {
+	time::Measurement meas(std::cout);
+	sorting::mergesort(tape);
 }
 
 void cli() {
 	std::string command;
-	//std::srand(std::time(0));
-	std::srand(0);
+	auto seed = std::time(0);
+	std::srand(seed);
+	std::cout << "File sorter v1.0" << std::endl;
+	std::cout << "Dominik Lau 188697" << std::endl;
+	std::cout << "[DEBUG] seed: " << seed << std::endl;
+	std::srand(std::time(0));
 	while (true) {
 		std::cout << std::endl << "input command: " << std::endl;
 		std::cin >> command;
 		if (command == "exit") {
 			break;
 		} else if (command == "manual") {
-			sorting::mergesort(*impl::carloader::fromCli());
+			runSort(*impl::carloader::fromCli());
 		} else if (command == "random") {
 			uint64_t records;
-			std::cout << "number of records to generate: ";
 			std::cin >> records;
-			auto tape = impl::carloader::fromGenerator(records);
-			auto ops = time::getWriteClock().get() + time::getReadClock().get();
-			sorting::mergesort(*tape);
-			std::cout << time::getWriteClock().get() + time::getReadClock().get() - ops << std::endl;
+			runSort(*impl::carloader::fromGenerator(records));			
 		} else if (command == "file") {
-			sorting::mergesort(*impl::carloader::fromFile("aaa"));
+			runSort(*impl::carloader::fromFile("aaa"));
 		} else if (command == "help") {
 			std::cout << "available commands:" << std::endl
 				<< "manual - generate tape from user input" << std::endl
-				<< "random - generate tape randomly" << std::endl
+				<< "random <n> - generate tape with n random records" << std::endl
 				<< "file - generate tape from file" << std::endl
 				<< "exit - exit" << std::endl;
 		}

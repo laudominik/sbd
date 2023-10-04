@@ -2,47 +2,24 @@
 #include <vector>
 #include <thread>
 #include <fstream>
-#include <iostream>
+#include <ios>
 
-#include <time/ReadClock.h>
-#include <time/WriteClock.h>
+#include <time/DiskClocks.h>
 
 namespace sbd::time {
-	class MeasurementReport : public std::vector<std::chrono::nanoseconds> {
-	public:
-		MeasurementReport(const std::string& filename) : filename(filename) {}
-		~MeasurementReport() {
-			dump();
-		}
-	private:
-		std::string filename;
-		void dump() {
-			/*std::ofstream file(filename);
-			if (!file.good()) {
-				std::cerr << "[ERROR|MeasurementReport] cannot create file" << std::endl;
-				return;
-			}
-			for (const auto meas : *this) {
-				file << "[INFO|Measurement] " << meas.count() << "ns" << std::endl;
-			}
-			file.close();*/
-		}
-	};
-
-
 	class Measurement {
 	public:
-		Measurement(MeasurementReport& collection): collection(collection) {};
-		//Measurement(MeasurementReport& collection) : collection(collection), start({sbd::time::getWriteClock(), sbd::time::getReadClock()}) {}
+		Measurement(std::ostream& in) : in(in), startTimestamp({ writeClock().get(), readClock().get(), phaseClock().get()}) {};
 		~Measurement() {
-			//auto elapsed = std::chrono::steady_clock::now() - start;
-			//collection.push_back(elapsed);
+			auto writes = writeClock().get() - startTimestamp.write;
+			auto reads = readClock().get() - startTimestamp.read;
+			auto phases = phaseClock().get() - startTimestamp.phases;
+			in << "[Measurement] r: " << reads << " w: " << writes << " io(r+w): " << writes + reads << " phases: " << phases << std::endl;
 		}
 	private:
-		MeasurementReport& collection;
+		std::ostream& in;
 		struct Timestamp {
-			uint64_t write, read;
-		};
-		std::pair<uint64_t, uint64_t> start;
+			uint64_t write, read, phases;
+		} startTimestamp;
 	};
 }

@@ -44,12 +44,12 @@ void read() {
 
 TEST(Tape, testWriting) {
 	write();
-	EXPECT_EQ(time::getWriteClock().get(), 2);
+	EXPECT_EQ(time::writeClock().get(), 2);
 }
 
 TEST(Tape, testReading) {
 	write();
 	read();
-	EXPECT_EQ(time::getReadClock().get(), 2);
+	EXPECT_EQ(time::readClock().get(), 2);
 }
 

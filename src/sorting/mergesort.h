@@ -7,18 +7,16 @@
 
 namespace {
 	template<typename RECORD_T>
-	bool distribute(sbd::basic::Tape<RECORD_T>& tape, sbd::basic::Tape<RECORD_T>& temp1, sbd::basic::Tape<RECORD_T>& temp2) {
+	void distribute(sbd::basic::Tape<RECORD_T>& tape, sbd::basic::Tape<RECORD_T>& temp1, sbd::basic::Tape<RECORD_T>& temp2) {
 		tape.reset(std::ios::in);
 		temp1.reset(std::ios::out);
 		temp2.reset(std::ios::out);
 		bool appendToTemp1{ true };
-		bool sorted{ true };
 		RECORD_T lastRecord;
 		while (!tape.isAtEnd()) {
 			auto record = tape.nextRecord();
 			if (record < lastRecord) {
 				appendToTemp1 = !appendToTemp1;
-				sorted = false;
 			}
 			if (appendToTemp1) {
 				temp1.addRecord(record);
@@ -28,8 +26,6 @@ namespace {
 			}
 			lastRecord = record;
 		}
-
-		return sorted;
 	}
 
 	template<typename RECORD_T>
@@ -43,11 +39,14 @@ namespace {
 	}
 
 	template<typename RECORD_T>
-	void merge(sbd::basic::Tape<RECORD_T>& out, sbd::basic::Tape<RECORD_T>& tape1, sbd::basic::Tape<RECORD_T>& tape2) {
+	bool merge(sbd::basic::Tape<RECORD_T>& out, sbd::basic::Tape<RECORD_T>& tape1, sbd::basic::Tape<RECORD_T>& tape2) {
 		out.reset(std::ios::out);
 		tape1.reset(std::ios::in);
 		tape2.reset(std::ios::in);
-		
+
+		bool sorted{ true };
+
+		RECORD_T lastRecord;
 		RECORD_T lastRecord1, lastRecord2;
 		while (!tape1.isAtEnd() && !tape2.isAtEnd()) {
 			bool isRun1Finished = tape1.currentRecord() < lastRecord1;
@@ -58,13 +57,22 @@ namespace {
 				lastRecord2 = {};
 				continue;
 			} 
+
 			lastRecord1 = tape1.currentRecord();
 			lastRecord2 = tape2.currentRecord();
-			out.addRecord(tape1.currentRecord() < tape2.currentRecord() ? tape1.nextRecord() : tape2.nextRecord());
+			auto record = tape1.currentRecord() < tape2.currentRecord() ? tape1.nextRecord() : tape2.nextRecord();
+			if (record < lastRecord) {
+				sorted = false;
+			}
+			out.addRecord(record);
+			lastRecord = record;
 		}
 		// add rest of the tape that didn't finish
+		if (!tape1.isAtEnd() && tape1.currentRecord() < lastRecord) sorted = false;
+		if (!tape2.isAtEnd() && tape2.currentRecord() < lastRecord) sorted = false;
 		handleEndOfRun(out, tape1, true);
 		handleEndOfRun(out, tape2, true);
+		return sorted;
 	}
 }
 
@@ -75,9 +83,11 @@ namespace sbd::sorting {
 		sbd::basic::Tape<RECORD_T> temp2(constants::TEMP_TAPE_2_NAME, std::ios::out);
 		bool sorted{ false };
 
+
 		while (!sorted) {
-			sorted = distribute(tape, temp1, temp2);
-			merge(tape, temp1, temp2);
+			distribute(tape, temp1, temp2);
+			sorted = merge(tape, temp1, temp2);
+			time::phaseClock().tick();
 		}
 	}
 }

@@ -8,8 +8,7 @@
 
 #include <util/Constants.h>
 #include <generic/RecordIfc.h>
-#include <time/ReadClock.h>
-#include <time/WriteClock.h>
+#include <time/DiskClocks.h>
 
 namespace sbd::basic {
 
@@ -17,7 +16,7 @@ namespace sbd::basic {
 	class Tape {
 
 	public:
-		Tape(const std::string& filename, std::ios_base::openmode mode):mode(mode), filename(filename) {
+		Tape(const std::string& filename, std::ios_base::openmode mode):mode(mode), filename(filename){
 			if (mode != std::ios::in && mode != std::ios::out) {
 				throw std::runtime_error("[ERROR] unsupported file mode");
 			}
@@ -48,7 +47,6 @@ namespace sbd::basic {
 			if (isAtEnd()) {
 				throw std::runtime_error("[ERROR] index out of file range");
 			}
-			lazyLoadPage();
 			if (pageEnd()) {
 				resetPagePtr();
 				loadPage();
@@ -59,7 +57,6 @@ namespace sbd::basic {
 
 		RECORD_T currentRecord() {
 			readModeCheck();
-			lazyLoadPage();
 			if (pageEnd()) {
 				resetPagePtr();
 				loadPage();
@@ -104,22 +101,14 @@ namespace sbd::basic {
 			}
 		}
 
-		void lazyLoadPage() {
-			if (firstPageLoaded) {
-				return;
-			}
-			loadPage();
-			firstPageLoaded = true;
-		}
-
 		void openFile() {
 			file.open(filename, mode);
 			if (!file.good()) {
 				throw std::runtime_error("[ERROR] unable to open file");
 			}
-		/*	if (mode == std::ios::in) {
+			if (mode == std::ios::in) {
 				loadPage();
-			}*/
+			}
 			fileSizeBytes = std::filesystem::file_size(filename);
 		}
 
@@ -152,7 +141,7 @@ namespace sbd::basic {
 				pageSerialized.insert(pageSerialized.end(), serial.begin(), serial.end());
 			}
 			std::copy(pageSerialized.begin(), pageSerialized.end(), std::ostream_iterator<uint8_t>(file));
-			time::getWriteClock().tick();
+			time::writeClock().tick();
 			file.flush();
 		}
 
@@ -168,7 +157,7 @@ namespace sbd::basic {
 			std::vector<uint8_t> pageSerialized(constants::PAGE_SIZE);
 			file.read(reinterpret_cast<char*>(pageSerialized.data()), constants::PAGE_SIZE);
 			auto readBytes = file.gcount();
-			time::getReadClock().tick();
+			time::readClock().tick();
 			auto readRecords = std::min(recordCount, readBytes / constants::RECORD_SIZE);
 			for (auto i = 0u; i < readRecords; i++) {
 				currentPage.push_back(RECORD_T::deserialize(pageSerialized, i * constants::RECORD_SIZE));
