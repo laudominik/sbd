@@ -4,10 +4,10 @@
 #include <fstream>
 #include <iostream>
 
-#include <clock/ReadClock.h>
-#include <clock/WriteClock.h>
+#include <time/ReadClock.h>
+#include <time/WriteClock.h>
 
-namespace sbd::impl::measurement {
+namespace sbd::time {
 	class MeasurementReport : public std::vector<std::chrono::nanoseconds> {
 	public:
 		MeasurementReport(const std::string& filename) : filename(filename) {}

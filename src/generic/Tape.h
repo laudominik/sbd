@@ -7,8 +7,8 @@
 
 #include <util/Constants.h>
 #include <generic/RecordIfc.h>
-#include <clock/ReadClock.h>
-#include <clock/WriteClock.h>
+#include <time/ReadClock.h>
+#include <time/WriteClock.h>
 
 namespace sbd::basic {
 
@@ -16,19 +16,18 @@ namespace sbd::basic {
 	class Tape {
 
 	public:
-		Tape(const std::string& filename, std::ios_base::openmode mode):mode(mode) {
+		Tape(const std::string& filename, std::ios_base::openmode mode):mode(mode), filename(filename) {
 			if (mode != std::ios::in && mode != std::ios::out) {
 				throw std::runtime_error("[ERROR] unsupported file mode");
 			}
-			file.open(filename, mode);
-			if (!file.good()) {
-				throw std::runtime_error("[ERROR] unable to open file");
-			}
- 			currentPage.reserve(recordCount);
-			if (mode == std::ios::in) {
-				loadPage();
-			}
+			currentPage.reserve(recordCount);
+			openFile();
 		}
+
+		Tape(const Tape&) = delete;
+		Tape& operator=(const Tape&) = delete;
+		Tape(Tape&&) = delete;
+		Tape& operator=(Tape&&) = delete;
 
 		void addRecord(const RECORD_T& record) {
 			writeModeCheck();
@@ -49,11 +48,13 @@ namespace sbd::basic {
 				throw std::runtime_error("[ERROR] index out of file range");
 			}
 
+			auto returnValue = currentPage[pageIndex++];
+
 			if (pageEnd()) {
 				resetPagePtr();
 				loadPage();
 			}
-			return currentPage[pageIndex++];
+			return returnValue;
 		}
 
 		RECORD_T currentRecord() const {
@@ -66,18 +67,42 @@ namespace sbd::basic {
 			return file.eof() && pageEnd();
 		}
 
+		void reset(std::ios_base::openmode mode_) {
+			closeFile();
+			mode = mode_;
+			resetPagePtr();
+			openFile();
+		}
+
 		~Tape() {
-			if (mode == std::ios::out) {
-				savePage();
-			}
-			file.close();
+			closeFile();
 		}
 	private:
 		std::vector<RECORD_T> currentPage;
 		std::ios_base::openmode mode;
 		uint64_t pageIndex{};
 		std::fstream file;
+		std::string filename;
 		static constexpr auto recordCount = constants::PAGE_SIZE / constants::RECORD_SIZE;
+
+		void closeFile() {
+			if (mode == std::ios::out) {
+				savePage();
+			}
+			if (file.is_open()) {
+				file.close();
+			}
+		}
+
+		void openFile() {
+			file.open(filename, mode);
+			if (!file.good()) {
+				throw std::runtime_error("[ERROR] unable to open file");
+			}
+			if (mode == std::ios::in) {
+				loadPage();
+			}
+		}
 
 		bool fullPage() {
 			return pageIndex >= recordCount;
