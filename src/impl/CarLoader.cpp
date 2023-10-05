@@ -28,7 +28,20 @@ namespace {
 
 namespace sbd::impl::carloader {
 	std::unique_ptr<CarTape> fromFile(const std::string& filename){
-		return std::make_unique<CarTape>(constants::MAIN_TAPE_NAME, std::ios::in);
+        auto tape = std::make_unique<CarTape>(constants::MAIN_TAPE_NAME, std::ios::out);
+        std::ifstream file(filename);
+        if(!file.good()){
+            return nullptr;
+        }
+
+        do {
+            std::string carNumber;
+            file >> carNumber;
+            tape->addRecord(carNumber);
+        } while(!file.eof());
+
+        file.close();
+		return tape;
 	}
 
 	std::unique_ptr<CarTape> fromCli(){

@@ -2,8 +2,7 @@
 
 #include <generic/Tape.h>
 #include <impl/CarTape.h>
-#include <time/ReadClock.h>
-#include <time/WriteClock.h>
+#include <time/DiskClocks.h>
 
 using namespace sbd;
 
