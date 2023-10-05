@@ -78,6 +78,11 @@ namespace sbd::basic {
 			openFile();
 		}
 
+        // only for printing
+        void close(){
+            file.close();
+        }
+
 		~Tape() {
 			closeFile();
 		}
@@ -93,7 +98,7 @@ namespace sbd::basic {
 		static constexpr auto recordCount = constants::PAGE_SIZE / constants::RECORD_SIZE;
 
 		void closeFile() {
-			if (mode == std::ios::out && pageIndex != 0) {
+			if (mode == std::ios::out) {
 				savePage();
 			}
 			if (file.is_open()) {

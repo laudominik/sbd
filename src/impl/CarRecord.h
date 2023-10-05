@@ -23,6 +23,11 @@ namespace sbd::impl {
 		}
 		CarRecord() :RecordIfc("") {};
 		CarRecord(const std::string& value) : RecordIfc(value) {};
+
+        friend std::ostream& operator<<(std::ostream& os, const CarRecord& record){
+            os << record.value;
+            return os;
+        }
 	private:
 		void addPadding(std::vector<uint8_t>& bytes) const {
 			while (bytes.size() != constants::RECORD_SIZE) {

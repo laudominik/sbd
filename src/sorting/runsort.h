@@ -1,9 +1,12 @@
 #pragma once
 
+#include <iostream>
+
 #include <time/Measurement.h>
 #include <impl/CarTape.h>
 #include <sorting/mergesort.h>
-#include <iostream>
+#include <util/FilePrinter.h>
+
 
 namespace sbd::sorting {
     inline void runSort(impl::CarTape& tape, std::ostream& out) {
