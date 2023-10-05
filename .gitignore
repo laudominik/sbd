@@ -40,3 +40,5 @@ cmake-build-debug
 data/maintape
 data/temptape1
 data/temptape2
+reports/zadanie1.synctex.gz
+.DS_Store

@@ -1,0 +1,94 @@
+\documentclass{article}
+
+\title{Sortowanie plików sekwencyjnych}
+\author{Dominik Lau (188697)}
+
+\usepackage{blindtext}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{amssymb}
+\usepackage{esvect}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
+
+\graphicspath{ {./obrazy/} }
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\def\multiset#1#2{\ensuremath{\left(\kern-.3em\left(\genfrac{}{}{0pt}{}{#1}{#2}\right)\kern-.3em\right)}}
+
+\lstset{frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+
+\begin{document}
+\maketitle
+
+\section{Wprowadzenie}
+Do zaimplementowania wybrałem algorytm sortowania przez scalanie w schemacie 2+1 (czyli z użyciem trzech taśm).  Algorytm ten pozwala na posortowanie
+danych o rozmiarze większym niż rozmiar pamięci operacyjnej. W wypadku tego algorytmu zużywamy 
+\begin{gather*}
+	S_{\text{DYSK}} = NR \text{  [B]}\\
+	S_{\text{RAM}} = B \text{  [B]}
+\end{gather*}
+gdzie $B$ - rozmiar strony (bloku) pamięci w bajtach, $N$ - ilość rekordów, $R$ - rozmiar rekordów w bajtach. Warto zwrócić uwagę, że 
+\begin{gather*}
+	S_{\text{RAM}} = O(1)
+\end{gather*}
+Oto statystyki prezentowanego algorytmu
+\begin{gather*}
+	T_{\text{Pes}} = \frac{4N\ceil{log_2(N)}}{b} \\
+	T_{\text{Opt}} = \frac{4N\ceil{log_2(N) - 1}}{b}
+\end{gather*}
+gdzie $b = \frac{B}{R}$, pozostałe oznaczenia jak powyżej. \\\\
+Wylosowany przeze mnie typ rekordu to numer rejestracyjny samochodu, które miałem uporządkować leksykograficznie. Implementacji dokonałem w 
+języku C++, jako rozmiar strony przyjąłem $B=70$ B a rozmiar rekordu $R=7$ B.
+\section{Specyfikacja pliku}
+\subsection{Szczegóły implementacyjne}
+Plik sekwencyjny w kodzie reprezentuje klasa \textit{Tape}, która jest generyczna i może być rozszerzona na inne typy rekordów. W ramach publicznego
+interfejsu udostępnia ona metody do odczytu aktualnego rekordu, pobrania następnego rekordu (w trybie odczytu) oraz dodawania rekordu (w trybie zapisu).
+Szablonowa klasa bazowa rekordu zdefiniowana jest w pliku \textit{RecordIfc.h}.  
+Folder \textit{impl} zawiera implementację wyżej wymienionych interfejsów
+do rekordu numeru rejestracyjnego.  Klasa rekordu udostępnia operacje \textbf{serializacji i deserializacji} oraz porównywania.
+\subsection{Zapis}
+Bloki z taśmy są zapisywane bezpośrednio do pliku po wcześniejszej serializacji rekordów. \textbf{Serializacja rekordów} polega na przedstawieniu 
+znaków wchodzących w skład numeru rejestracji w formie siedmiobajtowej tablicy. Wszystkie rekordy strony są w ten sposób transformowane i 
+scalane w jeden wektor, który następnie jest zapisywany do pliku. 
+\subsection{Odczyt}
+Odczyt działa podobnie do zapisu, z pliku pobierany jest blok, następuje \textbf{deserializacja} kolejnych siódemek bajtów do rekordów, które dodawane są do wektora w pamięci operacyjnej.
+\section{Prezentacja wyników programu}
+TODO: opis cli
+\section{Eksperyment}
+\subsection{Szczegóły implementacyjne}
+Kod przeprowadzonego eksperymentu umieściłem w pliku \textit{perf1.cpp} jako część biblioteki \textit{sbd\_test}. Test uruchamiany jest za pomocą frameworka do
+testowania gtest. W celu zliczania ilości operacji wejścia-wyjścia oraz liczby cykli algorytmu w bibliotece \textit{libsbd} zdefiniowałem trzy zegary: 
+\textit{writeClock}, \textit{readClock} oraz \textit{phaseClock}. W pomiarach wykorzystuję również klasę \textit{Measurement}, która zbiera pomiary na wzór paradygmatu RAII - w 
+konstruktorze zapisywany jest aktualny stan zegara a w destruktorze nowy stan zegara jest odejmowany od starego, w ten sposób otrzymuję liczbę
+wywołań funkcji \textit{tick} danego zegara.
+\subsection{Wyniki}
+TODO: wyniki w tabelce
+\section{Wnioski}
+TODO: przeanalizować i zapisać wnioski
+
+\end{document}
