@@ -13,10 +13,6 @@
 #include <util/Config.h>
 
 using namespace sbd;
-/*
-TODO:
-- performance tests
-*/
 
 void cli();
 
