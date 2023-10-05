@@ -7,6 +7,8 @@
 #include <filesystem>
 
 #include <util/Constants.h>
+#include <util/FilePrinter.h>
+#include <util/Config.h>
 #include <generic/RecordIfc.h>
 #include <time/DiskClocks.h>
 
@@ -22,7 +24,7 @@ namespace sbd::basic {
 			}
 			currentPage.reserve(recordCount);
 			openFile();
-		}
+        }
 
 		Tape(const Tape&) = delete;
 		Tape& operator=(const Tape&) = delete;
@@ -72,16 +74,14 @@ namespace sbd::basic {
 
 		void reset(std::ios_base::openmode mode_) {
 			closeFile();
+            if(mode == std::ios::out && util::Config::instance().isDebugModeEnabled()){
+                util::fileprinter::print(filename);
+            }
 			mode = mode_;
 			readFileBytes = 0u;
 			resetPagePtr();
 			openFile();
 		}
-
-        // only for printing
-        void close(){
-            file.close();
-        }
 
 		~Tape() {
 			closeFile();

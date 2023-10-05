@@ -16,13 +16,11 @@ using namespace sbd;
 /*
 TODO:
 - performance tests
-- write file contents after each iter
 */
 
 void cli();
 
 int main(){
-    //util::fileprinter::print(constants::MAIN_TAPE_NAME);
 	cli();
 }
 
@@ -42,12 +40,10 @@ void cli() {
 			break;
 		} else if (command == "manual") {
 			sorting::runSort(*impl::carloader::fromCli(), std::cout);
-            util::fileprinter::print(constants::MAIN_TAPE_NAME);
         } else if (command == "random") {
 			uint64_t records;
 			std::cin >> records;
 			sorting::runSort(*impl::carloader::fromGenerator(records), std::cout);
-            util::fileprinter::print(constants::MAIN_TAPE_NAME);
         } else if (command == "file") {
             std::string filename;
             std::cin >> filename;
@@ -57,7 +53,6 @@ void cli() {
                 continue;
             }
             sorting::runSort(*tape, std::cout);
-            util::fileprinter::print(constants::MAIN_TAPE_NAME);
         } else if (command == "debug") {
             util::Config::instance().switchDebugMode();
 		} else if (command == "help") {

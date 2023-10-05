@@ -85,10 +85,22 @@ namespace sbd::sorting {
 		sbd::basic::Tape<RECORD_T> temp2(constants::TEMP_TAPE_2_NAME, std::ios::out);
 		bool sorted{ false };
 
+        auto begin = time::phaseClock().get();
+
 		while (!sorted) {
 			distribute(tape, temp1, temp2);
+            auto phase = time::phaseClock().get() - begin + 1;
+            if(util::Config::instance().isDebugModeEnabled()){
+                std::cout << "[SORTING] after #" << phase << " distribution " << std::endl;
+            }
 			sorted = merge(tape, temp1, temp2);
+            if(util::Config::instance().isDebugModeEnabled()){
+                std::cout << "[SORTING] after #" << phase << " merge " << std::endl;
+            }
 			time::phaseClock().tick();
 		}
+        if(util::Config::instance().isDebugModeEnabled()){
+            tape.reset(std::ios::in);
+        }
 	}
 }

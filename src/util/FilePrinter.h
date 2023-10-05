@@ -10,7 +10,7 @@
 
 namespace sbd::util::fileprinter {
 
-    void print(const std::string& filename){
+    inline void print(const std::string& filename){
         if(!Config::instance().isDebugModeEnabled()) return;
 
         std::cout << "[TAPE] " << filename << std::endl;
