@@ -1,57 +1,75 @@
 b = 10
 OoOoOoOoOoOoOo 10 RECORDS oOoOoOoOoOoOoO
 [Theoretical] i/o: 12 phases: 3
+[INFO] number of series in generated file: 5
 [Measurement] r: 6 w: 5 io(r+w): 11 phases: 2
 OoOoOoOoOoOoOo 100 RECORDS oOoOoOoOoOoOoO
 [Theoretical] i/o: 240 phases: 6
-[Measurement] r: 125 w: 124 io(r+w): 249 phases: 6
+[INFO] number of series in generated file: 54
+[Measurement] r: 124 w: 123 io(r+w): 247 phases: 6
 OoOoOoOoOoOoOo 1000 RECORDS oOoOoOoOoOoOoO
 [Theoretical] i/o: 3600 phases: 9
-[Measurement] r: 1809 w: 1808 io(r+w): 3617 phases: 9
+[INFO] number of series in generated file: 504
+[Measurement] r: 1805 w: 1804 io(r+w): 3609 phases: 9
 OoOoOoOoOoOoOo 5000 RECORDS oOoOoOoOoOoOoO
 [Theoretical] i/o: 24000 phases: 12
-[Measurement] r: 12011 w: 12010 io(r+w): 24021 phases: 12
+[INFO] number of series in generated file: 2481
+[Measurement] r: 12010 w: 12009 io(r+w): 24019 phases: 12
 OoOoOoOoOoOoOo 10000 RECORDS oOoOoOoOoOoOoO
 [Theoretical] i/o: 52000 phases: 13
+[INFO] number of series in generated file: 4925
 [Measurement] r: 26011 w: 26010 io(r+w): 52021 phases: 13
 OoOoOoOoOoOoOo 25000 RECORDS oOoOoOoOoOoOoO
 [Theoretical] i/o: 140000 phases: 14
-[Measurement] r: 70013 w: 70012 io(r+w): 140025 phases: 14
+[INFO] number of series in generated file: 12462
+[Measurement] r: 70012 w: 70011 io(r+w): 140023 phases: 14
 OoOoOoOoOoOoOo 50000 RECORDS oOoOoOoOoOoOoO
 [Theoretical] i/o: 300000 phases: 15
+[INFO] number of series in generated file: 24932
 [Measurement] r: 150013 w: 150012 io(r+w): 300025 phases: 15
 OoOoOoOoOoOoOo 100000 RECORDS oOoOoOoOoOoOoO
 [Theoretical] i/o: 640000 phases: 16
+[INFO] number of series in generated file: 49875
 [Measurement] r: 320015 w: 320014 io(r+w): 640029 phases: 16
 OoOoOoOoOoOoOo 200000 RECORDS oOoOoOoOoOoOoO
 [Theoretical] i/o: 1360000 phases: 17
-[Measurement] r: 680014 w: 680013 io(r+w): 1360027 phases: 17
+[INFO] number of series in generated file: 100218
+[Measurement] r: 680016 w: 680015 io(r+w): 1360031 phases: 17
 
 b = 100
 OoOoOoOoOoOoOo 10 RECORDS oOoOoOoOoOoOoO
-[Theoretical] i/o: 1 phases: 3
-[Measurement] r: 9 w: 8 io(r+w): 17 phases: 3
+[Average] i/o: 1 phases: 3
+[INFO] number of series in generated file: 5
+[Measurement] r: 6 w: 5 io(r+w): 11 phases: 2
 OoOoOoOoOoOoOo 100 RECORDS oOoOoOoOoOoOoO
-[Theoretical] i/o: 24 phases: 6
+[Average] i/o: 24 phases: 6
+[INFO] number of series in generated file: 54
 [Measurement] r: 18 w: 17 io(r+w): 35 phases: 6
 OoOoOoOoOoOoOo 1000 RECORDS oOoOoOoOoOoOoO
-[Theoretical] i/o: 360 phases: 9
+[Average] i/o: 360 phases: 9
+[INFO] number of series in generated file: 504
 [Measurement] r: 189 w: 188 io(r+w): 377 phases: 9
 OoOoOoOoOoOoOo 5000 RECORDS oOoOoOoOoOoOoO
-[Theoretical] i/o: 2400 phases: 12
-[Measurement] r: 1212 w: 1211 io(r+w): 2423 phases: 12
+[Average] i/o: 2400 phases: 12
+[INFO] number of series in generated file: 2481
+[Measurement] r: 1211 w: 1210 io(r+w): 2421 phases: 12
 OoOoOoOoOoOoOo 10000 RECORDS oOoOoOoOoOoOoO
-[Theoretical] i/o: 5200 phases: 13
-[Measurement] r: 2613 w: 2612 io(r+w): 5225 phases: 13
+[Average] i/o: 5200 phases: 13
+[INFO] number of series in generated file: 4925
+[Measurement] r: 2612 w: 2611 io(r+w): 5223 phases: 13
 OoOoOoOoOoOoOo 25000 RECORDS oOoOoOoOoOoOoO
-[Theoretical] i/o: 14000 phases: 14
-[Measurement] r: 7014 w: 7013 io(r+w): 14027 phases: 14
+[Average] i/o: 14000 phases: 14
+[INFO] number of series in generated file: 12462
+[Measurement] r: 7013 w: 7012 io(r+w): 14025 phases: 14
 OoOoOoOoOoOoOo 50000 RECORDS oOoOoOoOoOoOoO
-[Theoretical] i/o: 30000 phases: 15
-[Measurement] r: 15015 w: 15014 io(r+w): 30029 phases: 15
+[Average] i/o: 30000 phases: 15
+[INFO] number of series in generated file: 24932
+[Measurement] r: 15013 w: 15012 io(r+w): 30025 phases: 15
 OoOoOoOoOoOoOo 100000 RECORDS oOoOoOoOoOoOoO
-[Theoretical] i/o: 64000 phases: 16
+[Average] i/o: 64000 phases: 16
+[INFO] number of series in generated file: 49875
 [Measurement] r: 32016 w: 32015 io(r+w): 64031 phases: 16
 OoOoOoOoOoOoOo 200000 RECORDS oOoOoOoOoOoOoO
-[Theoretical] i/o: 136000 phases: 17
+[Average] i/o: 136000 phases: 17
+[INFO] number of series in generated file: 100218
 [Measurement] r: 68017 w: 68016 io(r+w): 136033 phases: 17

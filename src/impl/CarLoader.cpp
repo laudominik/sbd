@@ -41,7 +41,8 @@ namespace sbd::impl::carloader {
         } while(!file.eof());
 
         file.close();
-		return tape;
+        tape->reset(std::ios::in);
+        return tape;
 	}
 
 	std::unique_ptr<CarTape> fromCli(){
@@ -61,14 +62,21 @@ namespace sbd::impl::carloader {
 			}
 			tape->addRecord(CarRecord(carNumber));
 		}
-		return tape;
+        tape->reset(std::ios::in);
+        return tape;
 	}
 
 	std::unique_ptr<CarTape> fromGenerator(uint64_t n){
 		auto tape = std::make_unique<CarTape>(constants::MAIN_TAPE_NAME, std::ios::out);
+        CarRecord lastRecord;
+        uint64_t r = 1;
 		for (auto i = 0u; i < n; i++) {
-			tape->addRecord(CarRecord(generateCarNumber()));
+            auto newRecord = CarRecord(generateCarNumber());
+			tape->addRecord(newRecord);
+            if(newRecord < lastRecord) r++;
+            lastRecord = newRecord;
 		}
+        std::cout << "[INFO] number of series in generated file: " << r << std::endl;
 		tape->reset(std::ios::in);
 		return tape;
 	}

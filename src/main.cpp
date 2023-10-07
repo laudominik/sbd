@@ -35,11 +35,13 @@ void cli() {
 		if (command == "exit") {
 			break;
 		} else if (command == "manual") {
-			sorting::runSort(*impl::carloader::fromCli(), std::cout);
+            auto tape = impl::carloader::fromCli();
+			sorting::runSort(tape, std::cout);
         } else if (command == "random") {
 			uint64_t records;
 			std::cin >> records;
-			sorting::runSort(*impl::carloader::fromGenerator(records), std::cout);
+            auto tape = impl::carloader::fromGenerator(records);
+			sorting::runSort(tape, std::cout);
         } else if (command == "file") {
             std::string filename;
             std::cin >> filename;
@@ -48,7 +50,7 @@ void cli() {
                 std::cout << "[ERROR] file not found" << std::endl;
                 continue;
             }
-            sorting::runSort(*tape, std::cout);
+            sorting::runSort(tape, std::cout);
         } else if (command == "debug") {
             util::Config::instance().switchDebugMode();
 		} else if (command == "help") {

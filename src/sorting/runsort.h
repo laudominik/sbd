@@ -9,9 +9,10 @@
 
 
 namespace sbd::sorting {
-    inline void runSort(impl::CarTape& tape, std::ostream& out) {
+    inline void runSort(std::unique_ptr<impl::CarTape>& tape, std::ostream& out) {
         time::Measurement meas(out);
-        mergesort(tape);
+        mergesort(*tape);
+        tape.reset();
     }
 }
 

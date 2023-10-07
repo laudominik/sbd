@@ -94,7 +94,6 @@ namespace sbd::basic {
 		std::string filename;
 		uint64_t fileSizeBytes{};
 		uint64_t readFileBytes{};
-		bool firstPageLoaded{ false };
 		static constexpr auto recordCount = constants::PAGE_SIZE / constants::RECORD_SIZE;
 
 		void closeFile() {
