@@ -14,6 +14,7 @@
 \usepackage{esvect}
 \usepackage{graphicx}
 \usepackage{mathtools}
+\usepackage[margin=0.5in]{geometry}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
@@ -25,7 +26,7 @@
 \def\multiset#1#2{\ensuremath{\left(\kern-.3em\left(\genfrac{}{}{0pt}{}{#1}{#2}\right)\kern-.3em\right)}}
 
 \lstset{frame=tb,
-  language=Python,
+  language=C++,
   aboveskip=3mm,
   belowskip=3mm,
   showstringspaces=false,
@@ -46,7 +47,22 @@
 \maketitle
 
 \section{Wprowadzenie}
-Do zaimplementowania wybrałem algorytm sortowania przez scalanie w schemacie 2+1 (czyli z użyciem trzech taśm).  Algorytm ten pozwala na posortowanie
+Do zaimplementowania wybrałem algorytm sortowania przez scalanie w schemacie 2+1 (czyli z użyciem trzech taśm).  
+Wylosowane przeze mnie typ rekordu to \textbf{numery rejestracyjne samochodów}, które miałem uporządkować \textbf{leksykograficznie}. Implementacji dokonałem w 
+języku C++, rozmiar rekordu przyjąłem $R=7$ [B], najpierw jako rozmiar strony ustaliłem  $B=70$ [B] a następnie
+$B=700$ [B].
+\section{Sortowanie przez scalanie}
+Sortowanie to składa się z kolejnych iteracji (faz), z czego każda faza ma dwie części. Oto pseudokod
+\begin{lstlisting}
+while(!sorted){
+	[tape1, tape2] = distribute(tape)
+	[tape,  sorted] = merge(tape1, tape2)
+}
+\end{lstlisting}
+\textbf{Dystrybucja} polega na rozkładaniu kolejnych podciągów niemalejących (serii) wartości w taśmie wejściowej na 
+na zmianę na dwie taśmy pomocnicze.  \textbf{Scalanie} to łączenie kolejnych serii i zapisywanie ich na taśmie. 
+W ten sposób z każdą iteracją w sortowanej taśmie powstaje coraz więcej serii aż do momentu powstania pojedynczej. Wówczas jesteśmy w stanie uznać plik za posortowany. \\\\
+Algorytm ten pozwala na posortowanie
 danych o rozmiarze większym niż rozmiar pamięci operacyjnej. W wypadku tego algorytmu zużywamy 
 \begin{gather*}
 	S_{\text{DYSK}} = NR \text{  [B]}\\
@@ -58,12 +74,11 @@ gdzie $B$ - rozmiar strony (bloku) pamięci w bajtach, $N$ - ilość rekordów, 
 \end{gather*}
 Oto statystyki prezentowanego algorytmu
 \begin{gather*}
-	T_{\text{Pes}} = \frac{4N\ceil{log_2(N)}}{b} \\
-	T_{\text{Opt}} = \frac{4N\ceil{log_2(N) - 1}}{b}
+	T_{\text{Pes}} = \frac{4N\ceil{log_2(N)}}{b} \text{  [i/o]}\\
+	T_{\text{Opt}} = \frac{4N\ceil{log_2(N) - 1}}{b} \text{  [i/o]}
 \end{gather*}
-gdzie $b = \frac{B}{R}$, pozostałe oznaczenia jak powyżej. \\\\
-Wylosowany przeze mnie typ rekordu to numer rejestracyjny samochodu, które miałem uporządkować leksykograficznie. Implementacji dokonałem w 
-języku C++, jako rozmiar strony przyjąłem $B=70$ B a rozmiar rekordu $R=7$ B.
+gdzie $b = \frac{B}{R}$, pozostałe oznaczenia jak powyżej.  Czas wykonania algorytmu liczony jest w ilości operacji
+dyskowych.
 \section{Specyfikacja pliku}
 \subsection{Szczegóły implementacyjne}
 Plik sekwencyjny w kodzie reprezentuje klasa \textit{Tape}, która jest generyczna i może być rozszerzona na inne typy rekordów. W ramach publicznego
@@ -78,7 +93,50 @@ scalane w jeden wektor, który następnie jest zapisywany do pliku.
 \subsection{Odczyt}
 Odczyt działa podobnie do zapisu, z pliku pobierany jest blok, następuje \textbf{deserializacja} kolejnych siódemek bajtów do rekordów, które dodawane są do wektora w pamięci operacyjnej.
 \section{Prezentacja wyników programu}
-TODO: opis cli
+Efekt wywołania operacji help udostępnianej przez program
+\begin{lstlisting}
+	manual - generate tape from user input
+	random <n> - generate tape with n random records
+	file - generate tape from file
+	debug - enable/disable debug mode
+	exit - exit
+\end{lstlisting}
+manual, file i random to trzy sposoby na wprowadzanie danych do programu (tworzenie taśmy). Debug umożliwia
+przełączanie trybu wypisywania wszystkiego i wypisywania tylko statystyk pomiaru (odczyty/zapisy/fazy).  Oto 
+przykładowe wywołanie random 5.
+\begin{lstlisting}
+[TAPE] maintape
+7DEP1CD
+0OF2Q8J
+M9EOCHA
+L6VIHD8
+QIWSW6Y
+
+[TAPE] temptape1
+
+[TAPE] temptape2
+
+[SORTING] after #1 distribution 
+[TAPE] temptape1
+7DEP1CD
+L6VIHD8
+QIWSW6Y
+
+[TAPE] temptape2
+0OF2Q8J
+M9EOCHA
+
+[SORTING] after #1 merge 
+[TAPE] maintape
+0OF2Q8J
+7DEP1CD
+L6VIHD8
+M9EOCHA
+QIWSW6Y
+
+[Measurement] r: 4 w: 3 io(r+w): 7 phases: 1
+\end{lstlisting}
+\textit{temptape1} i \textit{temptape2} to taśmy pomocnicze a \textit{maintape} to taśma główna czyli sortowany plik sekwencyjny.
 \section{Eksperyment}
 \subsection{Szczegóły implementacyjne}
 Kod przeprowadzonego eksperymentu umieściłem w pliku \textit{perf1.cpp} jako część biblioteki \textit{sbd\_test}. Test uruchamiany jest za pomocą frameworka do
@@ -87,8 +145,49 @@ testowania gtest. W celu zliczania ilości operacji wejścia-wyjścia oraz liczb
 konstruktorze zapisywany jest aktualny stan zegara a w destruktorze nowy stan zegara jest odejmowany od starego, w ten sposób otrzymuję liczbę
 wywołań funkcji \textit{tick} danego zegara.
 \subsection{Wyniki}
-TODO: wyniki w tabelce
+(wyniki teoretyczne to przypadki średnie) \\
+dla $b=10$
+\begin{center}
+\begin{tabular}{ c | c c c c | c c}
+ N & odczyty & zapisy & r+w & liczba faz & teoretyczne r+w & teoretyczna liczba faz\\ 
+\hline
+ 10 & 6 & 5 & 11 & 2 & 12 & 3\\  
+ 100 & 125 & 124 & 249 & 6 & 240 & 6 \\
+ 1000 & 1809 & 1808 & 3617 & 9 & 3600 & 9\\
+ 5000 & 12011 & 12010 & 24021 & 12 & 24000 & 12\\
+ 10000 & 26011 & 26010 & 52021 & 13 & 52000 & 13 \\
+ 25000 & 70013 & 70012 & 140025 & 14 & 140000 & 14 \\
+ 50000 & 150013 & 150012 & 300025 & 15 & 300000 & 15\\
+ 100000 & 320015 & 320014 & 640029 & 16 & 640000 & 16\\
+ 200000 & 680014 & 680013 & 1360027 & 17 & 1360000 & 17\\
+\end{tabular}
+\end{center}
+dla $b=100$
+\begin{center}
+\begin{tabular}{ c | c c c c | c c }
+ N & odczyty & zapisy & r+w & liczba faz & teoretyczne r+w & teoretyczna liczba faz \\ 
+\hline
+ 10 & 9 & 8 & 17 & 3 & 1 & 3\\  
+ 100 & 18 & 17 & 35 & 6 & 24 & 6 \\
+ 1000 & 189 & 188 & 377 & 9 & 360 & 9\\
+ 5000 & 1212 & 1211 & 2423 & 12 & 2400 & 12\\
+ 10000 & 2613 & 2612 & 5225 & 13 & 5200 & 13 \\
+ 25000 & 7014 & 7013 & 14027 & 14 & 14000 & 14 \\
+ 50000 & 15015 & 15014 & 300025 & 15 & 300000 & 15\\
+ 100000 & 32016 & 32015 & 64031 & 16 & 64000 & 16\\
+ 200000 & 68017 & 68016 & 136033 & 17 & 136000 & 17\\
+\end{tabular}
+\end{center}
+\subsection{Omówienie}
+Powyższe wyniki można uznać za zgodne z rozważaniami teoretycznymi mimo drobnych odstępstw, które
+związane są ze szczegółami implementacyjnymi (np. pewnymi nadmiarowymi odczytami/zapisami) a także 
+oscylacjami od wartości średniej. Warto zwrócić uwagę na fakt, że większa ilość rekordów skutkuje mniejszym
+odchyleniem od oczekiwanych ilości zapisu/odczytu - jest to uzasadnione \textbf{centralnym twierdzeniem granicznym}
+(rozkład wartości średniej dąży do szpilki prawdopodobieństwa). Pragnę zauważyć, że \textbf{liczba faz w zależności od 
+$N$ nie jest różna dla różnych współczynników blokowania} - zależy tylko od ilości serii, których w średnim przypadku jest $\frac{N}{2}$. Różni się natomiast liczba operacji wejścia-wyjścia, \textbf{zgodnie z intuicją czym większa
+strona tym rzadziej do niej sięgamy} (spadek liniowy względem $\frac{1}{b}$).
 \section{Wnioski}
-TODO: przeanalizować i zapisać wnioski
+
+
 
 \end{document}
