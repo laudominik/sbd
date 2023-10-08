@@ -18,7 +18,8 @@ inline void average(uint64_t n){
 
 TEST(Perf1, testCase1){
     static constexpr auto records = {10, 100, 1000, 5000, 10000, 25000, 50000, 100000, 200000};
-    std::srand(std::time(nullptr));
+    //std::srand(std::time(nullptr));
+    std::srand(0);
     std::cout << "b = " << constants::PAGE_SIZE / constants::RECORD_SIZE << std::endl;
     for(const auto n : records){
         std::cout << "OoOoOoOoOoOoOo " << n << " RECORDS oOoOoOoOoOoOoO" << std::endl;

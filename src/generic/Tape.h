@@ -80,7 +80,7 @@ namespace sbd::basic {
 			mode = mode_;
 			readFileBytes = 0u;
 			resetPagePtr();
-			openFile();
+            openFile();
 		}
 
 		~Tape() {

@@ -61,7 +61,7 @@ while(!sorted){
 \end{lstlisting}
 \textbf{Dystrybucja} polega na rozkładaniu kolejnych ciągów niemalejących (serii) wartości w taśmie wejściowej 
 na zmianę na dwie taśmy pomocnicze.  \textbf{Scalanie} to łączenie kolejnych serii i zapisywanie ich na taśmie. 
-W ten sposób z każdą iteracją w sortowanej taśmie powstaje coraz więcej serii aż do momentu powstania pojedynczej. Wówczas plik jest posortowany. \\\\
+W ten sposób z każdą iteracją w sortowanej taśmie powstaje coraz mniej serii aż do momentu powstania pojedynczej. Wówczas plik jest posortowany. \\\\
 Algorytm ten pozwala na posortowanie
 danych o rozmiarze większym niż rozmiar pamięci operacyjnej. W wypadku tego algorytmu zużywamy 
 \begin{gather*}
@@ -134,7 +134,7 @@ L6VIHD8
 M9EOCHA
 QIWSW6Y
 
-[Measurement] r: 4 w: 3 io(r+w): 7 phases: 1
+[Measurement] r: 3 w: 3 io(r+w): 6 phases: 1
 \end{lstlisting}
 \textit{temptape1} i \textit{temptape2} to taśmy pomocnicze a \textit{maintape} to taśma główna czyli sortowany plik sekwencyjny.
 \section{Eksperyment}
@@ -194,7 +194,7 @@ dla $b=100$
 \hline
  10 & 5 & 6 & 6 & 12 & 2 & 1.2 & 3\\  
  100 & 54 & 18 & 18 & 36 & 6 & 24 & 6 \\
- 1000 & 504 & 189 & 189 & 378 & 9 & 4000 & 10\\
+ 1000 & 504 & 189 & 189 & 378 & 9 & 400 & 10\\
  5000 & 2481 & 1211 & 1211 & 2422 & 12 & 2400 & 12\\
  10000 & 4925 & 2612 & 2612 & 5224 & 13 & 5200 & 13 \\
  25000 & 12464 &  7013 & 7013 & 14026 & 14 & 14000 & 14 \\

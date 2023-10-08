@@ -99,8 +99,5 @@ namespace sbd::sorting {
             }
 			time::phaseClock().tick();
 		}
-        if(util::Config::instance().isDebugModeEnabled()){
-            tape.reset(std::ios::in);
-        }
 	}
 }

@@ -13,6 +13,9 @@ namespace sbd::sorting {
         time::Measurement meas(out);
         mergesort(*tape);
         tape.reset();
+        if(util::Config::instance().isDebugModeEnabled()){
+            util::fileprinter::print(constants::MAIN_TAPE_NAME);
+        }
     }
 }
 
